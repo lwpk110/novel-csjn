@@ -1,0 +1,79 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Resolve Vite base path
+        id: base_path
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          OWNER_LOWER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          REPO_LOWER=$(echo "${REPO_NAME}" | tr '[:upper:]' '[:lower:]')
+          if [ "${REPO_LOWER}" = "${OWNER_LOWER}.github.io" ]; then
+            echo "base=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=/${REPO_NAME}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build static site
+        env:
+          VITE_BASE_PATH: ${{ steps.base_path.outputs.base }}
+        run: npm run build
+
+      - name: Prepare SPA fallback and disable Jekyll
+        run: |
+          touch dist/.nojekyll
+          cp dist/index.html dist/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

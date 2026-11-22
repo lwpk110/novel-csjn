@@ -1,0 +1,6 @@
+{
+  "name": "长生纪年 · 小说大纲与世界设定集",
+  "description": "面向多世界长生轮回题材的交互式小说大纲、独立卷章架构、人物关系图谱与长生系统设定工坊。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
