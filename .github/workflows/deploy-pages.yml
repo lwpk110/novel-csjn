@@ -39,6 +39,8 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Resolve Vite base path
         id: base_path
@@ -51,6 +53,9 @@ jobs:
           else
             echo "base=/${REPO_NAME}/" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Typecheck
+        run: npm run lint
 
       - name: Build static site
         env:
