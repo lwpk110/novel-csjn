@@ -2,10 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import {
   ArrowRight,
   ChevronDown,
@@ -81,35 +77,6 @@ function buildPolarTerrainGeometry(radius: number, radialSegs: number, angularSe
   geo.setIndex(indices);
   geo.computeVertexNormals();
   return geo;
-}
-
-function createSoftCloudRingTexture(): THREE.CanvasTexture {
-  const size = 512;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d')!;
-  ctx.clearRect(0, 0, size, size);
-
-  for (let i = 0; i < 60; i++) {
-    const angle = (i / 60) * Math.PI * 2;
-    const rad = 120 + ((i * 29) % 75);
-    const x = size / 2 + Math.cos(angle) * rad;
-    const y = size / 2 + Math.sin(angle) * rad;
-    const r = 36 + (i % 5) * 14;
-    const g = ctx.createRadialGradient(x, y, 4, x, y, r);
-    g.addColorStop(0, 'rgba(241, 245, 249, 0.22)');
-    g.addColorStop(0.6, 'rgba(226, 232, 240, 0.08)');
-    g.addColorStop(1, 'rgba(226, 232, 240, 0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
 }
 
 export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
@@ -233,17 +200,17 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
     });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 0.96;
     renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     renderer.shadowMap.enabled = !isSoftwareGl;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // 3. Scene, Camera, Fog & Studio RoomEnvironment
+    // 3. Scene, Camera, Fog & Studio RoomEnvironment (Crisp direct MSAA render, zero bloom haze)
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#0B0E14');
-    scene.fog = new THREE.FogExp2('#0D1119', 0.0095);
+    scene.fog = new THREE.FogExp2('#0D1119', 0.0042);
 
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.3, 240);
     camera.position.set(0, 26, 36);
@@ -252,7 +219,7 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
     const roomEnv = new RoomEnvironment();
     const envTarget = pmremGenerator.fromScene(roomEnv, 0.04);
     scene.environment = envTarget.texture;
-    scene.environmentIntensity = 0.78;
+    scene.environmentIntensity = 0.48;
     roomEnv.dispose();
     pmremGenerator.dispose();
 
@@ -270,22 +237,6 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
       cameraGoalRef.current.active = false;
     };
     controls.addEventListener('start', cancelCameraGoal);
-
-    // Optional hardware-GPU selective UnrealBloom post-processing
-    let composer: EffectComposer | null = null;
-    if (!isSoftwareGl) {
-      composer = new EffectComposer(renderer);
-      composer.setSize(width, height);
-      composer.addPass(new RenderPass(scene, camera));
-      const bloomPass = new UnrealBloomPass(
-        new THREE.Vector2(width, height),
-        0.34,
-        0.45,
-        0.86
-      );
-      composer.addPass(bloomPass);
-      composer.addPass(new OutputPass());
-    }
 
     const disposables: { dispose: () => void }[] = [envTarget];
     const maxAniso = renderer.capabilities.getMaxAnisotropy();
@@ -327,12 +278,12 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
     scene.add(skyDome);
     disposables.push(skyGeo, skyMat);
 
-    // 4. Studio + Atmospheric Sector Lighting
-    const hemiLight = new THREE.HemisphereLight('#C6DCF7', '#26201A', 0.72);
+    // 4. Studio + Atmospheric Sector Lighting (Balanced for crisp detail)
+    const hemiLight = new THREE.HemisphereLight('#C6DCF7', '#26201A', 0.56);
     hemiLight.position.set(0, 40, 0);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight('#FFF3D6', 1.95);
+    const keyLight = new THREE.DirectionalLight('#FFF3D6', 1.48);
     keyLight.position.set(18, 28, 16);
     keyLight.castShadow = !isSoftwareGl;
     keyLight.shadow.mapSize.width = 2048;
@@ -347,15 +298,15 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
     keyLight.shadow.normalBias = 0.02;
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight('#C81E1E', 0.52);
+    const rimLight = new THREE.DirectionalLight('#C81E1E', 0.36);
     rimLight.position.set(-22, 14, -22);
     scene.add(rimLight);
 
-    const polarDayLight = new THREE.PointLight('#FDE047', 1.5, 28);
+    const polarDayLight = new THREE.PointLight('#FDE68A', 0.65, 24);
     polarDayLight.position.set(10, 9.5, -7);
     scene.add(polarDayLight);
 
-    const polarNightLight = new THREE.PointLight('#7C3AED', 1.75, 26);
+    const polarNightLight = new THREE.PointLight('#818CF8', 0.72, 24);
     polarNightLight.position.set(8, -1.2, 7.5);
     scene.add(polarNightLight);
 
@@ -514,33 +465,19 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
     const netherTether = new THREE.Line(tetherGeo, tetherMat);
     scene.add(netherTether);
 
-    // Celestial Floating Ring + Soft Drifting Cloud Ring under Heaven/Skywhale
-    const skyRingGeo = new THREE.TorusGeometry(5.8, 0.09, 10, 64);
+    // Celestial Floating Ring under Heaven/Skywhale (no hazy cloud plane smudge)
+    const skyRingGeo = new THREE.TorusGeometry(5.8, 0.08, 10, 64);
     const skyRingMat = new THREE.MeshStandardMaterial({
       color: '#D4AF37',
-      roughness: 0.22,
+      roughness: 0.24,
       metalness: 0.9,
-      emissive: '#F59E0B',
-      emissiveIntensity: 0.32,
+      emissive: '#B45309',
+      emissiveIntensity: 0.14,
     });
     const celestialRing = new THREE.Mesh(skyRingGeo, skyRingMat);
     celestialRing.rotation.x = Math.PI / 2.15;
     celestialRing.position.set(6.8, 5.1, -9.2);
     scene.add(celestialRing);
-
-    const cloudTex = createSoftCloudRingTexture();
-    const cloudGeo = new THREE.PlaneGeometry(16, 16);
-    const cloudMat = new THREE.MeshBasicMaterial({
-      map: cloudTex,
-      transparent: true,
-      opacity: 0.62,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-    });
-    const cloudStrata = new THREE.Mesh(cloudGeo, cloudMat);
-    cloudStrata.rotation.x = -Math.PI / 2;
-    cloudStrata.position.set(6.8, 3.65, -9.2);
-    scene.add(cloudStrata);
 
     disposables.push(
       netherDiskGeo,
@@ -549,10 +486,7 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
       tetherGeo,
       tetherMat,
       skyRingGeo,
-      skyRingMat,
-      cloudTex,
-      cloudGeo,
-      cloudMat
+      skyRingMat
     );
 
     // 7. Instanced Sculpted Pine/Peach Trees & Crystal Rock Spires
@@ -613,28 +547,6 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
     spireInstances.computeBoundingSphere();
     scene.add(spireInstances);
     disposables.push(spireGeo, spireMat);
-
-    // 8. Ambient Celestial Star / Spirit Mote Field
-    const starCount = 160;
-    const starPos = new Float32Array(starCount * 3);
-    for (let i = 0; i < starCount; i++) {
-      const a = (i / starCount) * Math.PI * 2 + (i % 7) * 0.35;
-      const r = 12 + (i % 30);
-      starPos[i * 3] = Math.cos(a) * r;
-      starPos[i * 3 + 1] = 1.8 + (i % 18) * 0.95;
-      starPos[i * 3 + 2] = Math.sin(a) * r;
-    }
-    const starGeo = new THREE.BufferGeometry();
-    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-    const starMat = new THREE.PointsMaterial({
-      color: '#F8FAFC',
-      size: 0.15,
-      transparent: true,
-      opacity: 0.58,
-    });
-    const stars = new THREE.Points(starGeo, starMat);
-    scene.add(stars);
-    disposables.push(starGeo, starMat);
 
     // 9. Build All 15 High-Detail Architectural Landmarks & Raycast Hit Targets
     const contactShadowTex = createContactShadowTexture();
@@ -713,35 +625,35 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
       'catmullrom',
       0.35
     );
-    const pathGeo = new THREE.TubeGeometry(pathCurve, 240, 0.068, 8, false);
+    const pathGeo = new THREE.TubeGeometry(pathCurve, 240, 0.046, 8, false);
     const pathMat = new THREE.MeshStandardMaterial({
       color: '#C81E1E',
-      roughness: 0.28,
-      metalness: 0.45,
-      emissive: '#DC2626',
-      emissiveIntensity: 0.72,
+      roughness: 0.32,
+      metalness: 0.4,
+      emissive: '#991B1B',
+      emissiveIntensity: 0.32,
       transparent: true,
-      opacity: 0.86,
+      opacity: 0.82,
     });
     const pathTube = new THREE.Mesh(pathGeo, pathMat);
     scene.add(pathTube);
 
     const travelerGroup = new THREE.Group();
     const travelerCore = new THREE.Mesh(
-      new THREE.SphereGeometry(0.2, 16, 16),
+      new THREE.SphereGeometry(0.13, 16, 16),
       new THREE.MeshStandardMaterial({
         color: '#FEF08A',
-        emissive: '#F59E0B',
-        emissiveIntensity: 1.9,
-        roughness: 0.1,
+        emissive: '#D97706',
+        emissiveIntensity: 0.75,
+        roughness: 0.2,
       })
     );
     const travelerRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.36, 0.032, 8, 24),
+      new THREE.TorusGeometry(0.24, 0.024, 8, 24),
       new THREE.MeshStandardMaterial({
         color: '#FCA5A5',
-        emissive: '#DC2626',
-        emissiveIntensity: 1.2,
+        emissive: '#B91C1C',
+        emissiveIntensity: 0.45,
       })
     );
     travelerGroup.add(travelerCore, travelerRing);
@@ -753,15 +665,15 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
       return found ? found.worldPos.clone().add(new THREE.Vector3(0.35, 0.42, 0.35)) : new THREE.Vector3();
     });
     const chasingCurve = new THREE.CatmullRomCurve3(chasingPoints, false, 'catmullrom', 0.35);
-    const chasingGeo = new THREE.TubeGeometry(chasingCurve, 180, 0.06, 8, false);
+    const chasingGeo = new THREE.TubeGeometry(chasingCurve, 180, 0.04, 8, false);
     const chasingMat = new THREE.MeshStandardMaterial({
       color: '#A855F7',
-      roughness: 0.25,
-      metalness: 0.52,
-      emissive: '#9333EA',
-      emissiveIntensity: 0.95,
+      roughness: 0.28,
+      metalness: 0.48,
+      emissive: '#7E22CE',
+      emissiveIntensity: 0.36,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.85,
     });
     const chasingTube = new THREE.Mesh(chasingGeo, chasingMat);
     scene.add(chasingTube);
@@ -769,20 +681,20 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
     // Jade-Phoenix Seal Beacon (青玉凰印追影梭)
     const chaserGroup = new THREE.Group();
     const chaserCore = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.22, 0),
+      new THREE.OctahedronGeometry(0.14, 0),
       new THREE.MeshStandardMaterial({
         color: '#F3E8FF',
-        emissive: '#A855F7',
-        emissiveIntensity: 2.1,
-        roughness: 0.12,
+        emissive: '#9333EA',
+        emissiveIntensity: 0.78,
+        roughness: 0.18,
       })
     );
     const chaserRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.36, 0.028, 8, 24),
+      new THREE.TorusGeometry(0.25, 0.022, 8, 24),
       new THREE.MeshStandardMaterial({
         color: '#6EE7B7',
-        emissive: '#10B981',
-        emissiveIntensity: 1.1,
+        emissive: '#059669',
+        emissiveIntensity: 0.42,
       })
     );
     chaserRing.rotation.x = Math.PI / 3;
@@ -809,8 +721,8 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
         entry.hoverRingMesh.visible = isHov && !isSel;
         entry.sprite.visible = showLabelsRef.current && (matchesSector || isSel || isHov);
         entry.sprite.scale.set(
-          isSel ? 3.5 : isHov ? 3.35 : 3.0,
-          isSel ? 0.88 : isHov ? 0.84 : 0.75,
+          isSel ? 2.75 : isHov ? 2.6 : 2.35,
+          isSel ? 0.69 : isHov ? 0.65 : 0.59,
           1
         );
 
@@ -887,7 +799,6 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-      composer?.setSize(w, h);
     };
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
@@ -926,11 +837,9 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
       const delta = Math.min(clock.getDelta(), 0.1);
       const elapsed = clock.getElapsedTime();
 
-      // Mechanical astrolabe & sky cloud drift
+      // Mechanical astrolabe rotation
       celestialRing.rotation.z = elapsed * 0.09;
-      cloudStrata.rotation.z = -elapsed * 0.035;
       gimbalRing.rotation.z = elapsed * 0.025;
-      stars.rotation.y = elapsed * 0.008;
 
       landmarkEntries.forEach((entry, idx) => {
         if (entry.data.stratum === 'sky') {
@@ -979,11 +888,7 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
       }
 
       controls.update();
-      if (composer) {
-        composer.render();
-      } else {
-        renderer.render(scene, camera);
-      }
+      renderer.render(scene, camera);
 
       if (isSoftwareGl) {
         afterDraw(tick);
@@ -1004,7 +909,6 @@ export const WorldMap3D: React.FC<WorldMap3DProps> = ({ onJumpToArc }) => {
       renderer.domElement.removeEventListener('pointerup', handlePointerUp);
       renderer.domElement.removeEventListener('pointermove', handlePointerMove);
       controls.dispose();
-      composer?.dispose();
 
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh) {

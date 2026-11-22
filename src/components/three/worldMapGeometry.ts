@@ -74,30 +74,30 @@ export function createTerrainPBRMaps(maxAnisotropy: number): TerrainPBRMaps {
   const ctx = albedoCanvas.getContext('2d')!;
 
   // Base parchment / mineral slate
-  ctx.fillStyle = '#E6DFCE';
+  ctx.fillStyle = '#D7CEBA';
   ctx.fillRect(0, 0, size, size);
 
   // Left Half: Normal Sector (常昼常夜 · 江南青绿与关山土黄)
   const leftGrad = ctx.createRadialGradient(cx * 0.55, cy, 40, cx * 0.55, cy, size * 0.55);
-  leftGrad.addColorStop(0, '#EBE3D0');
-  leftGrad.addColorStop(0.55, '#DDD4BE');
-  leftGrad.addColorStop(1, '#C9BEA4');
+  leftGrad.addColorStop(0, '#DDD4BF');
+  leftGrad.addColorStop(0.55, '#CEC3A9');
+  leftGrad.addColorStop(1, '#B8AC8F');
   ctx.fillStyle = leftGrad;
   ctx.fillRect(0, 0, cx, size);
 
   // Top-Right: Polar Day (极昼炽域 · 金砂与琉璃矿脉)
   const dayGrad = ctx.createRadialGradient(cx * 1.45, cy * 0.52, 40, cx * 1.45, cy * 0.52, size * 0.52);
-  dayGrad.addColorStop(0, '#F7EAC4');
-  dayGrad.addColorStop(0.6, '#E8D39A');
-  dayGrad.addColorStop(1, '#CCA85E');
+  dayGrad.addColorStop(0, '#E9D9AA');
+  dayGrad.addColorStop(0.6, '#D6BE7D');
+  dayGrad.addColorStop(1, '#B69249');
   ctx.fillStyle = dayGrad;
   ctx.fillRect(cx, 0, cx, cy);
 
   // Bottom-Right: Polar Night (极夜寒渊 · 玄青深海玄武岩)
   const nightGrad = ctx.createRadialGradient(cx * 1.45, cy * 1.45, 40, cx * 1.45, cy * 1.45, size * 0.54);
-  nightGrad.addColorStop(0, '#27354D');
-  nightGrad.addColorStop(0.65, '#192234');
-  nightGrad.addColorStop(1, '#0F1522');
+  nightGrad.addColorStop(0, '#233148');
+  nightGrad.addColorStop(0.65, '#172031');
+  nightGrad.addColorStop(1, '#0D131F');
   ctx.fillStyle = nightGrad;
   ctx.fillRect(cx, cy, cx, cy);
 
@@ -329,33 +329,27 @@ export function createLandmarkLabelSprite(
   const rw = 424;
   const rh = 82;
 
-  // Drop shadow for crisp readability
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-  ctx.shadowBlur = 10;
-  ctx.shadowOffsetY = 3;
-
-  ctx.fillStyle = selected ? '#141413' : 'rgba(252, 250, 245, 0.96)';
+  // Crisp dark museum slate plaque (no blinding white card glare)
+  ctx.fillStyle = selected ? '#181314' : 'rgba(18, 20, 26, 0.90)';
   ctx.beginPath();
   ctx.roundRect(rx, ry, rw, rh, 6);
   ctx.fill();
 
-  ctx.shadowBlur = 0;
-  ctx.shadowOffsetY = 0;
-  ctx.strokeStyle = selected ? '#C81E1E' : accentHex;
-  ctx.lineWidth = selected ? 4 : 2.5;
+  ctx.strokeStyle = selected ? '#EF4444' : accentHex;
+  ctx.lineWidth = selected ? 3.5 : 2;
   ctx.stroke();
 
-  // Left vertical vermilion seal bar
-  ctx.fillStyle = selected ? '#C81E1E' : accentHex;
+  // Left vertical vermilion/accent seal bar
+  ctx.fillStyle = selected ? '#EF4444' : accentHex;
   ctx.fillRect(rx + 12, ry + 14, 6, rh - 28);
 
   ctx.textAlign = 'left';
   ctx.font = '600 20px system-ui, -apple-system, sans-serif';
-  ctx.fillStyle = selected ? '#FCA5A5' : '#991B1B';
+  ctx.fillStyle = selected ? '#FCA5A5' : '#D4D4D8';
   ctx.fillText(indexLabel, rx + 32, 46);
 
   ctx.font = '700 30px "Noto Serif SC", Georgia, serif';
-  ctx.fillStyle = selected ? '#FFFFFF' : '#141413';
+  ctx.fillStyle = '#FFFFFF';
   ctx.fillText(name, rx + 32, 82);
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -369,7 +363,7 @@ export function createLandmarkLabelSprite(
   });
 
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(3.15, 0.78, 1);
+  sprite.scale.set(2.35, 0.59, 1);
   sprite.renderOrder = 20;
   return sprite;
 }
@@ -459,7 +453,7 @@ function createPaperLanternMesh(
   ];
   const body = new THREE.Mesh(
     new THREE.LatheGeometry(pts, 12),
-    makeMat(color, 0.35, 0.05, { emissive: emissiveColor, emissiveIntensity: 1.55 })
+    makeMat(color, 0.38, 0.05, { emissive: emissiveColor, emissiveIntensity: 0.65 })
   );
   const capMat = makeMat('#18181B', 0.4, 0.6);
   const topCap = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.55, radius * 0.62, height * 0.1, 10), capMat);
@@ -540,9 +534,9 @@ export function buildLandmarkModel(
   const brassMat = makeMat('#D4AF37', 0.22, 0.92);
   const bronzeMat = makeMat('#7C5C38', 0.32, 0.85);
   const jadeMat = makeMat('#0F766E', 0.28, 0.12, { clearcoat: 0.45 });
-  const windowGlowMat = makeMat('#FDE68A', 0.2, 0.0, {
-    emissive: '#F59E0B',
-    emissiveIntensity: 1.35,
+  const windowGlowMat = makeMat('#FDE68A', 0.25, 0.0, {
+    emissive: '#D97706',
+    emissiveIntensity: 0.55,
   });
 
   const modelRoot = new THREE.Group();
@@ -656,7 +650,7 @@ export function buildLandmarkModel(
     hearth.position.set(0.45, 0.52, 0.12);
     const ember = new THREE.Mesh(
       new THREE.CylinderGeometry(0.2, 0.22, 0.16, 10),
-      makeMat('#FB923C', 0.2, 0.0, { emissive: '#EA580C', emissiveIntensity: 1.9 })
+      makeMat('#FB923C', 0.25, 0.0, { emissive: '#EA580C', emissiveIntensity: 0.8 })
     );
     ember.position.set(0.45, 0.48, 0.44);
     const anvil = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.24, 0.2), makeMat('#18181B', 0.3, 0.9));
@@ -693,7 +687,7 @@ export function buildLandmarkModel(
     const lampPole = new THREE.Mesh(new THREE.TubeGeometry(lampCurve, 14, 0.032, 6, false), brassMat);
     const lampBulb = new THREE.Mesh(
       new THREE.SphereGeometry(0.11, 12, 12),
-      makeMat('#FDE047', 0.15, 0.0, { emissive: '#F59E0B', emissiveIntensity: 1.85 })
+      makeMat('#FDE047', 0.2, 0.0, { emissive: '#F59E0B', emissiveIntensity: 0.78 })
     );
     lampBulb.position.set(-0.08, 1.2, 0.48);
     modelRoot.add(cobble, houseL, winL, roofL, houseR, roofR, lampPole, lampBulb);
@@ -727,7 +721,7 @@ export function buildLandmarkModel(
     dome.position.y = 1.72;
     const dial = new THREE.Mesh(
       new THREE.CylinderGeometry(0.22, 0.22, 0.06, 18),
-      makeMat('#38BDF8', 0.15, 0.2, { emissive: '#0284C7', emissiveIntensity: 1.6 })
+      makeMat('#38BDF8', 0.2, 0.2, { emissive: '#0284C7', emissiveIntensity: 0.62 })
     );
     dial.rotation.x = Math.PI / 2;
     dial.position.set(0, 1.15, 0.34);
@@ -736,7 +730,7 @@ export function buildLandmarkModel(
     [-0.45, 0.48].forEach((cx, idx) => {
       const shard = new THREE.Mesh(
         new THREE.ConeGeometry(0.11, idx === 0 ? 0.48 : 0.36, 5),
-        makeMat('#67E8F9', 0.1, 0.1, { emissive: '#06B6D4', emissiveIntensity: 1.4 })
+        makeMat('#67E8F9', 0.15, 0.1, { emissive: '#06B6D4', emissiveIntensity: 0.55 })
       );
       shard.position.set(cx, 0.38, 0.25);
       shard.rotation.z = idx === 0 ? 0.25 : -0.3;
@@ -815,7 +809,7 @@ export function buildLandmarkModel(
     // Gyroscopic sky ring
     const gyroRing = new THREE.Mesh(
       new THREE.TorusGeometry(0.88, 0.04, 10, 36),
-      makeMat('#38BDF8', 0.2, 0.85, { emissive: '#0284C7', emissiveIntensity: 0.7 })
+      makeMat('#38BDF8', 0.25, 0.85, { emissive: '#0284C7', emissiveIntensity: 0.25 })
     );
     gyroRing.rotation.x = Math.PI / 2.35;
     gyroRing.position.y = 0.96;
@@ -832,7 +826,7 @@ export function buildLandmarkModel(
 
     const mirrorObelisk = new THREE.Mesh(
       new THREE.ConeGeometry(0.72, 1.68, 4),
-      makeMat('#FEF08A', 0.06, 0.95, { clearcoat: 1.0, clearcoatRoughness: 0.05 })
+      makeMat('#FEF08A', 0.08, 0.92, { clearcoat: 1.0, clearcoatRoughness: 0.06 })
     );
     mirrorObelisk.rotation.y = Math.PI / 4;
     mirrorObelisk.position.y = 1.15;
@@ -845,7 +839,7 @@ export function buildLandmarkModel(
 
     const sunHalo = new THREE.Mesh(
       new THREE.TorusGeometry(0.46, 0.035, 10, 32),
-      makeMat('#FDE047', 0.15, 0.9, { emissive: '#F59E0B', emissiveIntensity: 0.9 })
+      makeMat('#FDE047', 0.2, 0.9, { emissive: '#D97706', emissiveIntensity: 0.35 })
     );
     sunHalo.position.y = 1.92;
     modelRoot.add(base1, base2, mirrorObelisk, sunHalo);
@@ -875,12 +869,12 @@ export function buildLandmarkModel(
 
     const sunOrb = new THREE.Mesh(
       new THREE.SphereGeometry(0.11, 12, 12),
-      makeMat('#FBBF24', 0.2, 0.1, { emissive: '#F59E0B', emissiveIntensity: 1.7 })
+      makeMat('#FBBF24', 0.25, 0.1, { emissive: '#F59E0B', emissiveIntensity: 0.65 })
     );
     sunOrb.position.set(-0.84, 1.02, 0);
     const moonOrb = new THREE.Mesh(
       new THREE.SphereGeometry(0.11, 12, 12),
-      makeMat('#BAE6FD', 0.2, 0.1, { emissive: '#38BDF8', emissiveIntensity: 1.4 })
+      makeMat('#BAE6FD', 0.25, 0.1, { emissive: '#38BDF8', emissiveIntensity: 0.55 })
     );
     moonOrb.position.set(0.84, 1.02, 0);
     modelRoot.add(plinth, halfGold, halfObsidian, dialPlate, gnomon, sunOrb, moonOrb);
@@ -940,12 +934,12 @@ export function buildLandmarkModel(
     ];
     const furnace = new THREE.Mesh(
       new THREE.LatheGeometry(furnacePts, 10),
-      makeMat('#312E81', 0.28, 0.72, { emissive: '#6D28D9', emissiveIntensity: 0.75 })
+      makeMat('#312E81', 0.32, 0.72, { emissive: '#5B21B6', emissiveIntensity: 0.32 })
     );
     furnace.position.y = 0.36;
     const karmaFlame = new THREE.Mesh(
       new THREE.OctahedronGeometry(0.24, 1),
-      makeMat('#E9D5FF', 0.1, 0.1, { emissive: '#A855F7', emissiveIntensity: 2.0 })
+      makeMat('#E9D5FF', 0.18, 0.1, { emissive: '#9333EA', emissiveIntensity: 0.72 })
     );
     karmaFlame.position.y = 1.48;
 
@@ -958,7 +952,7 @@ export function buildLandmarkModel(
 
     const sealRing = new THREE.Mesh(
       new THREE.TorusGeometry(0.84, 0.045, 8, 32),
-      makeMat('#EF4444', 0.2, 0.3, { emissive: '#C81E1E', emissiveIntensity: 1.25 })
+      makeMat('#EF4444', 0.25, 0.3, { emissive: '#B91C1C', emissiveIntensity: 0.45 })
     );
     sealRing.rotation.x = Math.PI / 2;
     sealRing.position.y = 1.56;
@@ -976,7 +970,7 @@ export function buildLandmarkModel(
     addColumnRing(rotunda, 8, 0.52, 0.72, 0.036, 0.34, brassMat);
     const coreChamber = new THREE.Mesh(
       new THREE.CylinderGeometry(0.34, 0.38, 0.7, 8),
-      makeMat('#F0F9FF', 0.25, 0.2, { emissive: '#38BDF8', emissiveIntensity: 0.35 })
+      makeMat('#F0F9FF', 0.28, 0.2, { emissive: '#0284C7', emissiveIntensity: 0.18 })
     );
     coreChamber.position.y = 0.69;
     const roof1 = new THREE.Mesh(createPagodaEaveLathe(0.76, 0.35, 0.26, 8), azureGlazeMat);
@@ -991,7 +985,7 @@ export function buildLandmarkModel(
     // Intersecting golden celestial armillary rings
     const ringA = new THREE.Mesh(
       new THREE.TorusGeometry(1.16, 0.035, 8, 40),
-      makeMat('#FDE047', 0.2, 0.92, { emissive: '#FACC15', emissiveIntensity: 0.75 })
+      makeMat('#FDE047', 0.22, 0.92, { emissive: '#D97706', emissiveIntensity: 0.22 })
     );
     ringA.rotation.set(Math.PI / 3, 0.25, 0);
     ringA.position.y = 0.98;
@@ -1020,7 +1014,7 @@ export function buildLandmarkModel(
     shopWindow.position.set(-0.36, 0.44, -0.15);
     const neonSign = new THREE.Mesh(
       new THREE.BoxGeometry(0.76, 0.11, 0.06),
-      makeMat('#67E8F9', 0.1, 0.1, { emissive: '#06B6D4', emissiveIntensity: 1.9 })
+      makeMat('#67E8F9', 0.2, 0.1, { emissive: '#0891B2', emissiveIntensity: 0.72 })
     );
     neonSign.position.set(-0.36, 0.92, 0.21);
 
@@ -1063,13 +1057,13 @@ export function buildLandmarkModel(
     containmentRing.position.y = 1.84;
     const sunCore = new THREE.Mesh(
       new THREE.SphereGeometry(0.22, 16, 16),
-      makeMat('#FED7AA', 0.1, 0.0, { emissive: '#F97316', emissiveIntensity: 2.2 })
+      makeMat('#FED7AA', 0.15, 0.0, { emissive: '#EA580C', emissiveIntensity: 0.85 })
     );
     sunCore.position.y = 1.84;
     modelRoot.add(iceBase, dome, spire, containmentRing, sunCore);
     labelAnchorY = 2.5 * s;
   } else {
-    // 回响卷 · 落花崖荒坟：天枢玄岩主峰 + 汉白玉石台 + 玄木青石古棺 + 崖畔落花桃树 + 朱砂封灵阵与破晓光柱
+    // 回响卷 · 落花崖荒坟：天枢玄岩主峰 + 汉白玉石台 + 玄木青石古棺 + 崖畔落花桃树 + 朱砂封灵阵与细光柱
     const cliffBase = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.55, 0.92, 9), makeMat('#27272A', 0.88, 0.08));
     cliffBase.position.y = 0.46;
     const altar = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.22, 0.98), marbleMat);
@@ -1088,29 +1082,29 @@ export function buildLandmarkModel(
     const treeTrunk = new THREE.Mesh(new THREE.TubeGeometry(treeCurve, 12, 0.05, 6, false), woodMat);
     const blossom = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.24, 1),
-      makeMat('#FB7185', 0.55, 0.02, { emissive: '#C81E1E', emissiveIntensity: 0.28 })
+      makeMat('#FB7185', 0.55, 0.02, { emissive: '#C81E1E', emissiveIntensity: 0.12 })
     );
     blossom.position.set(-0.56, 1.64, -0.2);
 
     const cinnabarSeal = new THREE.Mesh(
-      new THREE.TorusGeometry(0.76, 0.04, 8, 36),
-      makeMat('#EF4444', 0.2, 0.2, { emissive: '#C81E1E', emissiveIntensity: 1.5 })
+      new THREE.TorusGeometry(0.76, 0.036, 8, 36),
+      makeMat('#EF4444', 0.25, 0.2, { emissive: '#B91C1C', emissiveIntensity: 0.5 })
     );
     cinnabarSeal.rotation.x = Math.PI / 2;
     cinnabarSeal.position.y = 1.58;
 
     const beacon = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.035, 0.11, 1.95, 10),
-      makeMat('#FCA5A5', 0.15, 0.0, {
+      new THREE.CylinderGeometry(0.02, 0.055, 1.25, 10),
+      makeMat('#FCA5A5', 0.2, 0.0, {
         emissive: '#DC2626',
-        emissiveIntensity: 1.45,
+        emissiveIntensity: 0.42,
         transparent: true,
-        opacity: 0.65,
+        opacity: 0.32,
       })
     );
-    beacon.position.y = 2.25;
+    beacon.position.y = 1.98;
     modelRoot.add(cliffBase, altar, coffinBase, coffinLid, treeTrunk, blossom, cinnabarSeal, beacon);
-    labelAnchorY = 3.15 * s;
+    labelAnchorY = 2.85 * s;
   }
 
   modelRoot.traverse((child) => {
