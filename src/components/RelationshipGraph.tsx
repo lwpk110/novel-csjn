@@ -9,11 +9,16 @@ const WORLD_COLORS: Record<WorldKey | 'core', { fill: string; stroke: string; te
   core: { fill: '#141413', stroke: '#C81E1E', text: '#FFFFFF' },
   county: { fill: '#FFFFFF', stroke: '#52525B', text: '#141413' },
   dynasty: { fill: '#FFFFFF', stroke: '#991B1B', text: '#141413' },
+  blacksmith: { fill: '#FFFFFF', stroke: '#B45309', text: '#141413' },
+  nightwatch: { fill: '#FFFFFF', stroke: '#1E293B', text: '#141413' },
   atlantis: { fill: '#FFFFFF', stroke: '#1D4ED8', text: '#141413' },
   sect: { fill: '#FFFFFF', stroke: '#0F766E', text: '#141413' },
   skywhale: { fill: '#FFFFFF', stroke: '#0369A1', text: '#141413' },
   mirror_desert: { fill: '#FFFFFF', stroke: '#A16207', text: '#141413' },
+  twilight: { fill: '#FFFFFF', stroke: '#D97706', text: '#141413' },
   lantern_market: { fill: '#FFFFFF', stroke: '#B91C1C', text: '#141413' },
+  nether: { fill: '#FFFFFF', stroke: '#4C1D95', text: '#141413' },
+  heaven: { fill: '#FFFFFF', stroke: '#0284C7', text: '#141413' },
   alt_modern: { fill: '#FFFFFF', stroke: '#4338CA', text: '#141413' },
   alt_apocalypse: { fill: '#FFFFFF', stroke: '#334155', text: '#141413' },
   convergence: { fill: '#FFFFFF', stroke: '#B45309', text: '#141413' },
@@ -154,16 +159,21 @@ export const RelationshipGraph: React.FC = () => {
             onChange={(e) => setWorldFilter(e.target.value as WorldKey | 'all')}
             className="px-3 py-2 text-xs font-medium bg-white border border-[#D4D4D8] rounded-md text-[#141413] focus:outline-none focus:border-[#141413] cursor-pointer"
           >
-            <option value="all">全部世界（九世全览）</option>
-            <option value="county">第一世 · 青溪县城（凡尘）</option>
-            <option value="dynasty">第二世 · 大景皇朝（庙堂）</option>
-            <option value="atlantis">第三世 · 亚特兰蒂斯（深渊）</option>
-            <option value="sect">第四世 · 万花宗（仙门）</option>
-            <option value="skywhale">第五世 · 云鲸浮空城（苍穹）</option>
-            <option value="mirror_desert">第六世 · 镜面沙海（时空）</option>
-            <option value="lantern_market">第七世 · 枯骨灯市（幽冥）</option>
-            <option value="alt_modern">第八世 · 霓虹旧港（架空现代）</option>
-            <option value="alt_apocalypse">第九世 · 灰烬方舟（架空末世）</option>
+            <option value="all">全部世界（十四世全览）</option>
+            <option value="county">第一世 · 青溪县城（凡尘夫妻）</option>
+            <option value="dynasty">第二世 · 大景皇朝（庙堂君臣）</option>
+            <option value="blacksmith">第三世 · 北疆边城（沉默养父子）</option>
+            <option value="nightwatch">第四世 · 雾都暗巷（猫鼠宿敌）</option>
+            <option value="atlantis">第五世 · 亚特兰蒂斯（极夜深渊）</option>
+            <option value="sect">第六世 · 万花宗（仙门师徒）</option>
+            <option value="skywhale">第七世 · 云鲸浮空城（极昼苍穹）</option>
+            <option value="mirror_desert">第八世 · 镜面沙海（极昼时空）</option>
+            <option value="twilight">第九世 · 晨昏界（极昼极夜交界）</option>
+            <option value="lantern_market">第十世 · 枯骨灯市（极夜鬼市）</option>
+            <option value="nether">第十一世 · 九幽核销司（冥界）</option>
+            <option value="heaven">第十二世 · 陨星旧档库（天界）</option>
+            <option value="alt_modern">第十三世 · 霓虹旧港（架空现代）</option>
+            <option value="alt_apocalypse">第十四世 · 灰烬方舟（极夜末世）</option>
           </select>
         </div>
 
@@ -262,16 +272,16 @@ export const RelationshipGraph: React.FC = () => {
               >
                 {/* Quadrant Era Labels (Subtle Editorial Grounding) */}
                 <text x="36" y="34" fill="#A1A1AA" fontSize="11" fontWeight="500">
-                  古纪凡尘 & 苍穹云鲸
+                  青溪夫妻 · 云鲸苍穹 · 极夜深海
                 </text>
-                <text x="748" y="34" fill="#A1A1AA" fontSize="11" fontWeight="500">
-                  大景皇朝 & 万花仙门
+                <text x="690" y="34" fill="#A1A1AA" fontSize="11" fontWeight="500">
+                  北疆父子 · 大景皇朝 · 天界旧档库
                 </text>
                 <text x="36" y="582" fill="#A1A1AA" fontSize="11" fontWeight="500">
-                  深海亚特兰蒂斯 & 镜面沙海
+                  雾巷宿敌 · 晨昏走廊 &amp; 镜面沙海
                 </text>
-                <text x="690" y="582" fill="#A1A1AA" fontSize="11" fontWeight="500">
-                  幽冥灯市 · 架空现代 · 永冬末世
+                <text x="650" y="582" fill="#A1A1AA" fontSize="11" fontWeight="500">
+                  仙门 · 九幽鬼市 · 现代充电 &amp; 末世
                 </text>
 
                 {/* Relationship Edges */}
@@ -453,6 +463,9 @@ export const RelationshipGraph: React.FC = () => {
                 <p className="text-xs text-[#52525B] mt-2 font-mono-num">
                   命运状态：{selectedNode.eraStatus}
                 </p>
+                <p className="text-xs text-[#C81E1E] mt-1 font-medium leading-relaxed">
+                  寿元核定：{selectedNode.lifespanSpec}
+                </p>
               </div>
 
               <div className="space-y-4 text-sm">
@@ -487,6 +500,24 @@ export const RelationshipGraph: React.FC = () => {
                   <p className="text-xs text-[#52525B] leading-relaxed mt-1">
                     {selectedNode.visualAnchor}
                   </p>
+                </div>
+                <div className="pt-3 border-t border-[#E4E4E7] space-y-2">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-xs font-medium text-[#C81E1E]">
+                      灵魂底色 · Soul 设定
+                    </span>
+                    <span className="text-xs font-medium text-[#141413]">
+                      {selectedNode.soulProfile.archetype}
+                    </span>
+                  </div>
+                  <div className="text-xs text-[#27272A] leading-relaxed">
+                    <span className="text-[#71717A]">魂印与习惯：</span>
+                    {selectedNode.soulProfile.imprint}
+                  </div>
+                  <div className="text-xs text-[#3F3F46] leading-relaxed">
+                    <span className="text-[#71717A]">跨世共鸣：</span>
+                    {selectedNode.soulProfile.resonance}
+                  </div>
                 </div>
               </div>
 

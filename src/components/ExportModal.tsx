@@ -1,12 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import { Check, Copy, Download, X } from 'lucide-react';
 import {
+  APPRENTICE_ROMANCE_ARCS,
   CHARACTER_NODES,
+  CHASING_HUSBAND_SPEC,
   CIVILIZATION_TIMELINE,
   DELAYED_CLUE_CHAINS,
   GOLDEN_FINGER_COSTS,
+  LIFESPAN_TIER_MATRIX,
+  MAP_SECTORS,
+  MOBILITY_SKILL_SPEC,
   NOVEL_META,
+  PHONE_ARTIFACT_SPEC,
+  PROTAGONIST_SOUL_SPEC,
   RELATIONSHIP_EDGES,
+  SHORT_DRAMA_TROPES,
   SYSTEM_LAWS,
   WORLD_MATRIX,
 } from '../data/novelData';
@@ -60,6 +68,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ arcs, onClose }) => {
       );
       lines.push(`- **核心羁绊**：${arc.companionName}（${arc.companionRole}）`);
       lines.push(`- **单卷立意**：${arc.independentTheme}`);
+      lines.push(`- **核心爽点（${arc.thrillHook.label}）**：${arc.thrillHook.detail}`);
       lines.push(`- **假死退场**：${arc.deathMethod}`);
       lines.push('- **分节细纲**：');
       arc.beats.forEach((b, idx) => {
@@ -75,13 +84,25 @@ export const ExportModal: React.FC<ExportModalProps> = ({ arcs, onClose }) => {
         `- **金手指代价（反龙傲天）**：${arc.costBalance.costPaid}（爽点：${arc.costBalance.restraintThrill}）`
       );
       lines.push(
+        `- **灵魂设定（Soul）**：主角魂态：${arc.soulSetting.protagonistSoulState} ｜ 人物魂格：${arc.soulSetting.companionSoulSpec} ｜ 跨世共鸣：${arc.soulSetting.soulResonance}`
+      );
+      lines.push(
         `- **后期暗线引子**：${arc.foreshadowing.relicName}（${arc.foreshadowing.dormantYears}）—— ${arc.foreshadowing.futurePayoff}`
       );
     });
     lines.push('');
-    lines.push('## 三、核心人物与跨世暗线关系');
+    lines.push('## 三、核心人物、寿元核定、灵魂设定与跨世关系');
     CHARACTER_NODES.forEach((c) => {
-      lines.push(`- **${c.name}**（${c.worldLabel} · ${c.title}）：${c.beforeDeath} 假死后：${c.afterDeath}`);
+      lines.push(
+        `- **${c.name}**（${c.worldLabel} · ${c.title}）：[寿元] ${c.lifespanSpec} ｜ ${c.beforeDeath} 假死后：${c.afterDeath} ｜ **Soul**：${c.soulProfile.archetype}（${c.soulProfile.imprint} → ${c.soulProfile.resonance}）`
+      );
+    });
+    lines.push('');
+    lines.push('### 不同背景角色寿元核定体系');
+    LIFESPAN_TIER_MATRIX.forEach((tier) => {
+      lines.push(
+        `- **${tier.tierCode} · ${tier.category}**（${tier.lifespanRange}）：${tier.mechanism}｜代表人物：${tier.representativeCharacters}｜限制：${tier.constraintNote}`
+      );
     });
     lines.push('');
     lines.push('### 跨世隐线脉络');
@@ -89,9 +110,60 @@ export const ExportModal: React.FC<ExportModalProps> = ({ arcs, onClose }) => {
       lines.push(`- **${e.label}**：${e.detail}`);
     });
     lines.push('');
-    lines.push('## 四、九维世界观设定简表');
+    lines.push('### 极昼极夜地图板块法则');
+    MAP_SECTORS.forEach((sector) => {
+      lines.push(
+        `- **${sector.name}**（${sector.worldsIncluded}）：${sector.illuminationRule}｜伪装影响：${sector.disguiseImpact}`
+      );
+    });
+    lines.push('');
+    lines.push('### 爆款短剧爽点适配（不龙傲天）');
+    SHORT_DRAMA_TROPES.forEach((trope) => {
+      lines.push(`- **${trope.code} · ${trope.title}**：${trope.mechanism}（落点：${trope.placement}）`);
+    });
+    lines.push('');
+    lines.push(`### 高机动跑图身法：${MOBILITY_SKILL_SPEC.summary}`);
+    lines.push(MOBILITY_SKILL_SPEC.designPurpose);
+    MOBILITY_SKILL_SPEC.stages.forEach((st) => {
+      lines.push(`- **${st.stage} · ${st.name}**（${st.originArc}）：${st.speedEffect}｜限制：${st.costAndLimit}`);
+    });
+    lines.push('');
+    lines.push(`### ${PHONE_ARTIFACT_SPEC.title}`);
+    lines.push(`- **核心铁律**：${PHONE_ARTIFACT_SPEC.coreRule}`);
+    lines.push(`- **耗寿成本**：${PHONE_ARTIFACT_SPEC.burnCost}`);
+    lines.push(`- **现代反转**：${PHONE_ARTIFACT_SPEC.modernTwist}`);
+    PHONE_ARTIFACT_SPEC.logs.forEach((log) => {
+      lines.push(`- **${log.era}**（${log.batteryUsed}｜${log.disguiseForm}）：${log.capturedMemory}`);
+    });
+    lines.push('');
+    lines.push(`### ${PROTAGONIST_SOUL_SPEC.title}`);
+    lines.push(`- **核心机制**：${PROTAGONIST_SOUL_SPEC.coreConcept}`);
+    lines.push(`- **反龙傲天限制**：${PROTAGONIST_SOUL_SPEC.antiPowerLimit}`);
+    PROTAGONIST_SOUL_SPEC.soulFingerprints.forEach((fp) => {
+      lines.push(`- **${fp.name}**（${fp.origin}）：${fp.clueEffect}`);
+    });
+    PROTAGONIST_SOUL_SPEC.soulStages.forEach((st) => {
+      lines.push(`- **${st.stage}**（${st.span}）：${st.mechanism}`);
+    });
+    lines.push('');
+    lines.push(`### 追夫女主角专设：${CHASING_HUSBAND_SPEC.heroineName}`);
+    lines.push(`- **身份演变**：${CHASING_HUSBAND_SPEC.identityShift}`);
+    lines.push(`- **破防转折**：${CHASING_HUSBAND_SPEC.turningPoint}`);
+    lines.push(`- **追夫手段**：${CHASING_HUSBAND_SPEC.chasingStyle}（信物：${CHASING_HUSBAND_SPEC.bindingRelic}）`);
+    CHASING_HUSBAND_SPEC.scenes.forEach((s) => {
+      lines.push(`- **${s.era} · ${s.title}**：${s.tensionBeat}`);
+    });
+    lines.push('');
+    lines.push('### 女徒弟暧昧与冲师情感线');
+    APPRENTICE_ROMANCE_ARCS.forEach((a) => {
+      lines.push(
+        `- **${a.characterName}**（${a.originArc}｜${a.surfaceBond}）：契机：${a.ambiguityTrigger} ｜ 名场面：${a.signatureMoment} ｜ 回收：${a.emotionalPayoff}`
+      );
+    });
+    lines.push('');
+    lines.push('## 四、十四维世界观设定简表');
     WORLD_MATRIX.forEach((w) => {
-      lines.push(`- **${w.name}**（${w.eraTone}）：力量体系为${w.powerSystem}；核心意象：${w.visualMotifs}；伪装法则：${w.disguiseRule}`);
+      lines.push(`- **${w.name}**（${w.sectorLabel}｜${w.eraTone}）：力量体系为${w.powerSystem}；核心意象：${w.visualMotifs}；伪装法则：${w.disguiseRule}`);
     });
     return lines.join('\n');
   }, [arcs]);

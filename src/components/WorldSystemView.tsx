@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   ADAPTATION_BLUEPRINT,
+  APPRENTICE_ROMANCE_ARCS,
+  CHASING_HUSBAND_SPEC,
   GOLDEN_FINGER_COSTS,
+  LIFESPAN_TIER_MATRIX,
+  MAP_SECTORS,
+  MOBILITY_SKILL_SPEC,
+  PHONE_ARTIFACT_SPEC,
+  PROTAGONIST_SOUL_SPEC,
+  SHORT_DRAMA_TROPES,
   SYSTEM_LAWS,
   WORLD_MATRIX,
 } from '../data/novelData';
@@ -10,21 +18,27 @@ import { StoryArc } from '../types/novel';
 
 interface WorldSystemViewProps {
   arcs: StoryArc[];
+  onOpenMap?: () => void;
 }
 
 const ARC_COST_YEARS: Record<string, number> = {
   'arc-county': 0,
   'arc-dynasty': 18,
+  'arc-blacksmith': 35,
+  'arc-nightwatch': 45,
   'arc-atlantis': 95,
   'arc-sect': 60,
   'arc-skywhale': 140,
   'arc-mirror-desert': 200,
+  'arc-twilight': 150,
   'arc-lantern-market': 160,
+  'arc-nether': 210,
+  'arc-heaven': 280,
   'arc-alt-modern': 120,
   'arc-alt-apocalypse': 380,
 };
 
-export const WorldSystemView: React.FC<WorldSystemViewProps> = ({ arcs }) => {
+export const WorldSystemView: React.FC<WorldSystemViewProps> = ({ arcs, onOpenMap }) => {
   const playableArcs = arcs.filter((a) => a.reward.lifespanYears > 0);
   const [completedIds, setCompletedIds] = useState<string[]>(
     playableArcs.map((a) => a.id)
@@ -52,13 +66,13 @@ export const WorldSystemView: React.FC<WorldSystemViewProps> = ({ arcs }) => {
     : grossLifespan;
 
   const currentRealm =
-    netLifespan >= 4500
-      ? '九纪红尘境（可启新纪元荒坟回响）'
-      : netLifespan >= 2500
-      ? '踏破光阴境（横渡幻想与末法洪流）'
-      : netLifespan >= 1200
-      ? '沧溟长生境（跨越凡俗与仙门枷锁）'
-      : netLifespan >= 300
+    netLifespan >= 6000
+      ? '十四纪红尘主（可启新纪元荒坟回响）'
+      : netLifespan >= 3500
+      ? '阴阳平账境（横渡神鬼与末法洪流）'
+      : netLifespan >= 1800
+      ? '沧溟长生境（跨越凡俗、极昼极夜与仙门）'
+      : netLifespan >= 500
       ? '青史养气境（文武匠道初融）'
       : netLifespan > 0
       ? '凡心初定境（初窥长生门径）'
@@ -269,23 +283,412 @@ export const WorldSystemView: React.FC<WorldSystemViewProps> = ({ arcs }) => {
         </div>
       </section>
 
-      {/* Section 4: Multi-World Architectural Comparison Matrix */}
+      {/* Section 3.5: Differentiated Lifespan Tiers */}
       <section className="space-y-6">
         <div className="space-y-2">
           <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
-            九维跨纪元场景世界观矩阵
+            不同背景角色寿元核定体系（破除“全员百年一刀切”）
+          </h2>
+          <p className="text-sm text-[#52525B] max-w-3xl">
+            普通凡人严守百年寿命上限以衬托烟火珍贵；而武道奇遇、深海人鱼化龙、仙朝修仙与机械义体则按各自世界法则核定千载至万载寿元，逻辑自洽地支撑跨世守望与早期追夫。
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {LIFESPAN_TIER_MATRIX.map((tier) => (
+            <div
+              key={tier.tierCode}
+              className="bg-white border border-[#E4E4E7] rounded-xl p-5 flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-2.5">
+                <div className="flex items-baseline justify-between gap-2 text-xs">
+                  <span className="font-mono-num font-semibold text-[#C81E1E]">
+                    {tier.tierCode}
+                  </span>
+                  <span className="font-mono-num font-medium text-[#141413]">
+                    {tier.lifespanRange}
+                  </span>
+                </div>
+                <h3 className="font-editorial text-base font-semibold text-[#141413]">
+                  {tier.category}
+                </h3>
+                <p className="text-xs leading-relaxed text-[#3F3F46]">{tier.mechanism}</p>
+              </div>
+              <div className="pt-3 border-t border-[#F4F4F5] space-y-1.5 text-xs leading-relaxed">
+                <div className="text-[#141413] font-medium">
+                  代表人物：{tier.representativeCharacters}
+                </div>
+                <div className="text-[#71717A]">约束与代价：{tier.constraintNote}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 4: Polar Day / Polar Night / Twilight Geographic Plate System */}
+      <section className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="space-y-2">
+            <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
+              极昼极夜地图板块：光影、时间与伪装法则
+            </h2>
+            <p className="text-sm text-[#52525B] max-w-2xl">
+              诸天十四世刻意控制空间尺度不无限铺开，按“光照与时间流动特征”划分为四大紧缩板块；板块规则直接决定主角的伪装难度、跑图代价与印记暴露方式。
+            </p>
+          </div>
+          {onOpenMap && (
+            <button
+              type="button"
+              onClick={onOpenMap}
+              className="px-4 py-2 text-xs font-medium text-white bg-[#141413] hover:bg-[#27272A] rounded-md transition-colors whitespace-nowrap shrink-0 self-start sm:self-auto cursor-pointer"
+            >
+              打开 Three.js 3D 世界地图 →
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {MAP_SECTORS.map((sector) => (
+            <div
+              key={sector.key}
+              className="bg-white border border-[#E4E4E7] rounded-xl p-6 flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-2.5">
+                <div className="text-xs font-medium text-[#C81E1E]">
+                  {sector.subtitle}
+                </div>
+                <h3 className="font-editorial text-lg font-semibold text-[#141413]">
+                  {sector.name}
+                </h3>
+                <div className="text-xs font-medium text-[#3F3F46]">
+                  归属世界：{sector.worldsIncluded}
+                </div>
+                <p className="text-sm leading-[1.7] text-[#3F3F46] pt-1">
+                  {sector.illuminationRule}
+                </p>
+              </div>
+              <div className="pt-3 border-t border-[#F4F4F5] space-y-1.5 text-xs leading-relaxed text-[#52525B]">
+                <div>伪装与藏拙法则：{sector.disguiseImpact}</div>
+                <div className="text-[#71717A]">代价联动：{sector.costTension}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 5: 6 Hit Short-Drama Tropes Integration */}
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
+            爆款短剧爽点适配：不龙傲天的六重高粘性钩子
           </h2>
           <p className="text-sm text-[#52525B] max-w-2xl">
-            涵盖凡俗古纪、东方仙门、四大幻想异境、架空现代都市与永冬末世废土，确保每一卷切换都带来截然不同的题材张力与美学风格。
+            吸收当前爆款短剧最强的情绪节奏与拉扯结构，全部改造为贴合“克制有代价”主基调的文学爽点。
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {SHORT_DRAMA_TROPES.map((trope) => (
+            <div
+              key={trope.code}
+              className="bg-white border border-[#E4E4E7] rounded-xl p-5 flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-2">
+                <div className="text-xs font-medium text-[#C81E1E]">
+                  {trope.code}
+                </div>
+                <h3 className="font-editorial text-base font-semibold text-[#141413]">
+                  {trope.title}
+                </h3>
+                <p className="text-xs leading-relaxed text-[#3F3F46]">
+                  {trope.mechanism}
+                </p>
+              </div>
+              <div className="pt-3 border-t border-[#F4F4F5] text-xs leading-relaxed text-[#71717A]">
+                剧情落点：{trope.placement}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 5.5: Pure-Mobility Skill System (Anti-Map-Bloat) */}
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
+            高机动跑图身法：{MOBILITY_SKILL_SPEC.summary}
+          </h2>
+          <p className="text-sm text-[#52525B] max-w-2xl">
+            {MOBILITY_SKILL_SPEC.designPurpose}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {MOBILITY_SKILL_SPEC.stages.map((st, idx) => (
+            <div
+              key={st.stage}
+              className="bg-white border border-[#E4E4E7] rounded-xl p-6 flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-2.5">
+                <div className="flex items-baseline justify-between gap-2 text-xs">
+                  <span className="font-mono-num font-medium text-[#C81E1E]">
+                    0{idx + 1} · {st.stage}
+                  </span>
+                  <span className="text-[#71717A]">{st.originArc}</span>
+                </div>
+                <h3 className="font-editorial text-lg font-semibold text-[#141413]">
+                  {st.name}
+                </h3>
+                <p className="text-sm leading-[1.7] text-[#3F3F46]">
+                  {st.speedEffect}
+                </p>
+              </div>
+              <div className="pt-3 border-t border-[#F4F4F5] text-xs leading-relaxed text-[#52525B]">
+                反龙傲天限制：{st.costAndLimit}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 5.8: Cracked Phone Memory Relic (1% Battery Rule) */}
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
+            {PHONE_ARTIFACT_SPEC.title}
+          </h2>
+          <p className="text-sm text-[#52525B] max-w-2xl">
+            {PHONE_ARTIFACT_SPEC.coreRule}
+          </p>
+        </div>
+
+        <div className="bg-white border border-[#E4E4E7] rounded-xl p-6 sm:p-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-[#E4E4E7]">
+            <div>
+              <div className="text-xs font-medium text-[#C81E1E]">
+                耗寿亮屏铁律（绝非商城外挂）
+              </div>
+              <p className="text-sm leading-relaxed text-[#27272A] mt-2">
+                {PHONE_ARTIFACT_SPEC.burnCost}
+              </p>
+            </div>
+            <div className="md:pl-6 md:border-l md:border-[#E4E4E7]">
+              <div className="text-xs font-medium text-[#141413]">
+                第十三卷 · 五元充电线跨世反转
+              </div>
+              <p className="text-sm leading-relaxed text-[#27272A] mt-2">
+                {PHONE_ARTIFACT_SPEC.modernTwist}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {PHONE_ARTIFACT_SPEC.logs.map((log) => (
+              <div
+                key={log.era}
+                className="p-4 rounded-lg bg-[#FAFAFA] border border-[#E4E4E7] space-y-2"
+              >
+                <div className="flex items-baseline justify-between gap-2 text-xs">
+                  <span className="font-semibold text-[#141413]">{log.era}</span>
+                  <span className="font-mono-num text-[#C81E1E]">{log.batteryUsed}</span>
+                </div>
+                <div className="text-xs text-[#71717A]">
+                  伪装形态：{log.disguiseForm}
+                </div>
+                <p className="text-xs leading-relaxed text-[#3F3F46] pt-1">
+                  {log.capturedMemory}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 5.9: Core Soul System (Unextinguished Mortal Soul) */}
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
+            {PROTAGONIST_SOUL_SPEC.title}
+          </h2>
+          <p className="text-sm text-[#52525B] max-w-3xl">
+            {PROTAGONIST_SOUL_SPEC.coreConcept}
+          </p>
+        </div>
+
+        <div className="bg-white border border-[#E4E4E7] rounded-xl p-6 sm:p-8 space-y-8">
+          <div className="pb-6 border-b border-[#E4E4E7]">
+            <div className="text-xs font-medium text-[#C81E1E]">
+              反龙傲天灵魂铁律（魂印破绽大于战力加成）
+            </div>
+            <p className="text-sm leading-relaxed text-[#27272A] mt-2">
+              {PROTAGONIST_SOUL_SPEC.antiPowerLimit}
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="text-xs font-medium text-[#71717A]">
+              三大不可篡改灵魂指纹（换十四具皮囊仍被旧人精准认出）
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {PROTAGONIST_SOUL_SPEC.soulFingerprints.map((fp) => (
+                <div
+                  key={fp.name}
+                  className="p-4 rounded-lg bg-[#FAFAFA] border border-[#E4E4E7] space-y-2"
+                >
+                  <div className="text-sm font-semibold text-[#141413]">{fp.name}</div>
+                  <div className="text-xs text-[#C81E1E]">{fp.origin}</div>
+                  <p className="text-xs leading-relaxed text-[#3F3F46]">{fp.clueEffect}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-4 border-t border-[#E4E4E7]">
+            <div className="text-xs font-medium text-[#71717A]">
+              四阶灵魂年轮演化（抗疯狂沉降机制）
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {PROTAGONIST_SOUL_SPEC.soulStages.map((st, idx) => (
+                <div
+                  key={st.stage}
+                  className="p-4 rounded-lg border border-[#E4E4E7] space-y-1.5"
+                >
+                  <div className="flex items-baseline justify-between gap-2 text-xs">
+                    <span className="font-mono-num font-semibold text-[#141413]">
+                      0{idx + 1} · {st.stage}
+                    </span>
+                    <span className="text-[#71717A]">{st.span}</span>
+                  </div>
+                  <p className="text-xs leading-relaxed text-[#3F3F46]">{st.mechanism}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 5.95: Chasing-Husband Heroine Spec (Cui Mingyue) */}
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
+            追夫女主角专设 · {CHASING_HUSBAND_SPEC.heroineName}
+          </h2>
+          <p className="text-sm text-[#52525B] max-w-3xl">
+            {CHASING_HUSBAND_SPEC.originArc} · {CHASING_HUSBAND_SPEC.identityShift}
+          </p>
+        </div>
+
+        <div className="bg-white border border-[#E4E4E7] rounded-xl p-6 sm:p-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-[#E4E4E7]">
+            <div className="space-y-3">
+              <div>
+                <div className="text-xs font-medium text-[#C81E1E]">
+                  早启契机（第二卷末看破死遁 · 遇奇遇破百年限）
+                </div>
+                <p className="text-sm leading-relaxed text-[#27272A] mt-1.5">
+                  {CHASING_HUSBAND_SPEC.turningPoint}
+                </p>
+              </div>
+              <div>
+                <div className="text-xs font-medium text-[#71717A]">跨世追踪凭证</div>
+                <p className="text-sm font-medium text-[#141413] mt-1">
+                  {CHASING_HUSBAND_SPEC.bindingRelic}
+                </p>
+              </div>
+            </div>
+            <div className="space-y-3 md:pl-6 md:border-l md:border-[#E4E4E7]">
+              <div>
+                <div className="text-xs font-medium text-[#C81E1E]">跨界追踪男主方式</div>
+                <p className="text-sm leading-relaxed text-[#27272A] mt-1.5">
+                  {CHASING_HUSBAND_SPEC.chasingStyle}
+                </p>
+              </div>
+              <div>
+                <div className="text-xs font-medium text-[#71717A]">男主躲避与缩地跑路反应</div>
+                <p className="text-xs leading-relaxed text-[#3F3F46] mt-1">
+                  {CHASING_HUSBAND_SPEC.protagonistReaction}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {CHASING_HUSBAND_SPEC.scenes.map((scene) => (
+              <div
+                key={scene.title}
+                className="p-4 rounded-lg bg-[#FAFAFA] border border-[#E4E4E7] space-y-2"
+              >
+                <div className="text-xs font-medium text-[#C81E1E]">{scene.era}</div>
+                <h3 className="font-editorial text-base font-semibold text-[#141413]">
+                  {scene.title}
+                </h3>
+                <p className="text-xs leading-relaxed text-[#3F3F46]">{scene.tensionBeat}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 5.98: Female Apprentice Ambiguity & Romantic Tension */}
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
+            女徒弟情感线强化：超越普通师徒的暧昧与冲师张力
+          </h2>
+          <p className="text-sm text-[#52525B] max-w-3xl">
+            摒弃清汤寡水的单向报恩，在“老头伪装意外暴露、蜕鳞寒毒与盲区贴面试探”中逐步挑破男女暧昧界限，让假死后的守望与撬棺重逢更具情感爆发力。
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {APPRENTICE_ROMANCE_ARCS.map((arc) => (
+            <div
+              key={arc.characterName}
+              className="bg-white border border-[#E4E4E7] rounded-xl p-6 space-y-4"
+            >
+              <div className="pb-3 border-b border-[#E4E4E7]">
+                <div className="text-xs font-medium text-[#C81E1E]">{arc.originArc}</div>
+                <h3 className="font-editorial text-lg font-semibold text-[#141413] mt-1">
+                  {arc.characterName}
+                </h3>
+                <div className="text-xs text-[#71717A] mt-0.5">{arc.surfaceBond}</div>
+              </div>
+              <div className="space-y-2.5 text-xs leading-relaxed">
+                <div>
+                  <span className="font-medium text-[#141413]">界限松动契机：</span>
+                  <span className="text-[#3F3F46]">{arc.ambiguityTrigger}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-[#C81E1E]">暧昧拉扯名场面：</span>
+                  <span className="text-[#27272A]">{arc.signatureMoment}</span>
+                </div>
+                <div className="pt-2 border-t border-[#F4F4F5] text-[#52525B]">
+                  <span className="font-medium text-[#141413]">跨世情绪回收：</span>
+                  {arc.emotionalPayoff}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 6: Multi-World Architectural Comparison Matrix */}
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
+            十四维跨纪元场景世界观矩阵
+          </h2>
+          <p className="text-sm text-[#52525B] max-w-2xl">
+            涵盖凡俗古纪、边城父子、雾都暗巷、东方仙门、极昼极夜异境、九幽冥界与天庭官僚、架空现代都市与永冬末世废土，确保每一卷切换都带来截然不同的题材张力与美学风格。
           </p>
         </div>
 
         <div className="bg-white border border-[#E4E4E7] rounded-xl overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[820px]">
+          <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr className="border-b border-[#E4E4E7] text-xs font-medium text-[#71717A] bg-[#FAFAFA]">
                 <th className="py-3.5 px-5">场景世界</th>
-                <th className="py-3.5 px-5">时代基调</th>
+                <th className="py-3.5 px-5">地理板块与基调</th>
                 <th className="py-3.5 px-5">力量与社会秩序</th>
                 <th className="py-3.5 px-5">核心视觉意象</th>
                 <th className="py-3.5 px-5">假死与伪装法则</th>
@@ -298,7 +701,10 @@ export const WorldSystemView: React.FC<WorldSystemViewProps> = ({ arcs }) => {
                     {w.name}
                   </td>
                   <td className="py-4 px-5 text-[#52525B] whitespace-nowrap">
-                    {w.eraTone}
+                    <div className="text-xs font-medium text-[#C81E1E]">
+                      {w.sectorLabel}
+                    </div>
+                    <div className="mt-1">{w.eraTone}</div>
                   </td>
                   <td className="py-4 px-5 text-[#27272A] leading-relaxed">
                     {w.powerSystem}

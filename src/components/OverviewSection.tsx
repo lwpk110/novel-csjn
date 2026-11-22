@@ -96,7 +96,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
             )}
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent px-6 py-5">
               <p className="text-xs text-white/80">
-                横跨九大纪元：从凡尘青溪、深海云鲸到霓虹旧港与永冬方舟
+                横跨十四大纪元：从凡尘青溪、北疆铁匠、雾都暗巷、极昼极夜、冥界天庭到现代充电亮屏与永冬方舟
               </p>
             </div>
           </div>
@@ -110,15 +110,15 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
             {standaloneCount} + 1
           </div>
           <div className="text-xs text-[#71717A] mt-1.5">
-            古纪 / 幻想 / 现代 / 末世独立卷章
+            古纪 / 极昼极夜 / 神鬼 / 现代末世独立卷章
           </div>
         </div>
         <div className="py-6 lg:px-6 pl-6 lg:pl-6">
           <div className="font-mono-num text-2xl sm:text-3xl font-semibold text-[#141413]">
-            4 大代价
+            6 爽点 · 4 阶身法 · 黑砖
           </div>
           <div className="text-xs text-[#71717A] mt-1.5">
-            燃寿税 · 感官典当 · 因果信标 · 反龙傲天
+            红尘缩地步防图大 · 耗寿 1% 手机留影
           </div>
         </div>
         <div className="py-6 pr-6 lg:px-6">
@@ -126,7 +126,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
             +{totalLifespan.toLocaleString()} 年
           </div>
           <div className="text-xs text-[#71717A] mt-1.5">
-            九世累计结算寿元（未扣越界损耗）
+            十四世累计结算寿元（未扣越界损耗）
           </div>
         </div>
         <div className="py-6 pl-6">
@@ -146,7 +146,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
             时间洪流：文明跨纪元演进轴
           </h2>
           <p className="text-sm text-[#52525B] max-w-2xl">
-            主角的漫长生命本身就是一部文明编年史——从灵盛古纪步入幻想奇境，再顺着灵气退潮见证架空现代与永冬废土，最终迎来新一轮灵气复苏。
+            主角的漫长生命本身就是一部文明编年史——携破损手机与「缩地步」身法穿行于夫妻、父子、宿敌与极昼极夜板块之间，不扩张废土图幅、只写高密度人生，直到现代插上五元充电线亮屏对账。
           </p>
         </div>
 
@@ -359,10 +359,10 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-[28px] font-semibold text-[#141413]">
-              九世诸界与暗线伏笔总览
+              十四世诸界与暗线伏笔总览
             </h2>
             <p className="text-sm text-[#52525B] max-w-2xl">
-              从青溪县城到永冬方舟，任抽一卷皆可独立阅读；点击任意一卷即可进入细纲编辑器查阅本世延迟契子与金手指代价。
+              从青溪夫妻、北疆养父子、雾巷猫鼠宿敌到九幽天庭与现代充电亮屏，任抽一卷皆可独立阅读；点击任意一卷即可进入细纲编辑器查阅本世延迟契子与代价。
             </p>
           </div>
           <button
@@ -370,7 +370,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
             onClick={() => onNavigateTab('world')}
             className="text-sm font-medium text-[#141413] hover:text-[#C81E1E] underline underline-offset-4 decoration-[#D4D4D8] hover:decoration-[#C81E1E] transition-colors cursor-pointer whitespace-nowrap shrink-0 self-start sm:self-auto"
           >
-            查看反龙傲天代价体系与世界矩阵
+            查看缩地身法、黑砖手机与极昼极夜法则
           </button>
         </div>
 
@@ -385,12 +385,12 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
               }}
               className="w-full text-left p-5 sm:p-6 hover:bg-[#FAFAFA] transition-colors flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-8 cursor-pointer group"
             >
-              <div className="lg:w-44 shrink-0">
+              <div className="lg:w-48 shrink-0">
                 <div className="text-xs font-medium text-[#C81E1E]">
                   {arc.indexLabel} · {arc.worldName}
                 </div>
                 <div className="text-xs text-[#71717A] mt-1">
-                  {arc.identityType}
+                  {arc.sectorLabel} · {arc.identityType}
                 </div>
               </div>
 
@@ -401,6 +401,9 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
                 <p className="text-sm text-[#52525B] mt-1 line-clamp-2">
                   {arc.independentTheme}
                 </p>
+                <div className="text-xs text-[#C81E1E] mt-1.5 truncate">
+                  核心爽点：{arc.thrillHook.label}
+                </div>
               </div>
 
               <div className="lg:w-64 shrink-0 lg:border-l lg:border-[#E4E4E7] lg:pl-6">
@@ -411,7 +414,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({
                 <div className="text-xs text-[#71717A] mt-1 font-mono-num">
                   {arc.reward.lifespanYears > 0
                     ? `结算寿元 +${arc.reward.lifespanYears} 年`
-                    : '九纪伏笔总收束'}
+                    : '十四纪伏笔总收束'}
                 </div>
               </div>
 

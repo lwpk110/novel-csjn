@@ -10,16 +10,18 @@ import { OverviewSection } from './components/OverviewSection';
 import { OutlineWorkspace } from './components/OutlineWorkspace';
 import { RelationshipGraph } from './components/RelationshipGraph';
 import { WorldSystemView } from './components/WorldSystemView';
+import { WorldMap3D } from './components/WorldMap3D';
 import { ExportModal } from './components/ExportModal';
 
-type TabKey = 'overview' | 'outline' | 'graph' | 'world';
+type TabKey = 'overview' | 'outline' | 'graph' | 'map' | 'world';
 
-const STORAGE_KEY = 'longevity_chronicles_arcs_v4';
+const STORAGE_KEY = 'longevity_chronicles_arcs_v9';
 
 const NAV_ITEMS: { key: TabKey; label: string }[] = [
   { key: 'overview', label: '主题与循环' },
   { key: 'outline', label: '独立卷章大纲' },
   { key: 'graph', label: '人物关系图谱' },
+  { key: 'map', label: '世界地图' },
   { key: 'world', label: '世界与系统' },
 ];
 
@@ -33,7 +35,10 @@ export default function App() {
         if (
           Array.isArray(parsed) &&
           parsed.length > 0 &&
-          parsed.every((item) => item.clueWedge && item.costBalance)
+          parsed.every(
+            (item) =>
+              item.clueWedge && item.costBalance && item.thrillHook && item.soulSetting
+          )
         ) {
           return parsed;
         }
@@ -175,7 +180,21 @@ export default function App() {
 
         {activeTab === 'graph' && <RelationshipGraph />}
 
-        {activeTab === 'world' && <WorldSystemView arcs={arcs} />}
+        {activeTab === 'map' && (
+          <WorldMap3D
+            onJumpToArc={(arcId) => {
+              setSelectedArcId(arcId);
+              switchTab('outline');
+            }}
+          />
+        )}
+
+        {activeTab === 'world' && (
+          <WorldSystemView
+            arcs={arcs}
+            onOpenMap={() => switchTab('map')}
+          />
+        )}
       </main>
 
       {/* Quiet Editorial Footer */}

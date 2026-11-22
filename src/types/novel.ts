@@ -1,16 +1,99 @@
 export type WorldKey =
   | 'county'
   | 'dynasty'
+  | 'blacksmith'
+  | 'nightwatch'
   | 'atlantis'
   | 'sect'
   | 'skywhale'
   | 'mirror_desert'
+  | 'twilight'
   | 'lantern_market'
+  | 'nether'
+  | 'heaven'
   | 'alt_modern'
   | 'alt_apocalypse'
   | 'convergence';
 
-export type EraCategory = 'ancient' | 'fantasy' | 'future' | 'convergence';
+export type EraCategory =
+  | 'ancient'
+  | 'fantasy'
+  | 'celestial_nether'
+  | 'future'
+  | 'convergence';
+
+export type MapSectorKey = 'normal' | 'polar_day' | 'polar_night' | 'twilight_band';
+
+export interface MapSectorSpec {
+  key: MapSectorKey;
+  name: string;
+  subtitle: string;
+  illuminationRule: string;
+  worldsIncluded: string;
+  disguiseImpact: string;
+  costTension: string;
+}
+
+export interface MobilitySkillStage {
+  stage: string;
+  name: string;
+  originArc: string;
+  speedEffect: string;
+  costAndLimit: string;
+}
+
+export interface PhoneEraLog {
+  era: string;
+  batteryUsed: string;
+  disguiseForm: string;
+  capturedMemory: string;
+}
+
+export interface ChasingHusbandScene {
+  era: string;
+  title: string;
+  tensionBeat: string;
+}
+
+export interface ChasingHusbandSpec {
+  heroineName: string;
+  originArc: string;
+  identityShift: string;
+  turningPoint: string;
+  chasingStyle: string;
+  bindingRelic: string;
+  protagonistReaction: string;
+  scenes: ChasingHusbandScene[];
+}
+
+export interface ApprenticeRomanceProfile {
+  characterName: string;
+  originArc: string;
+  surfaceBond: string;
+  ambiguityTrigger: string;
+  signatureMoment: string;
+  emotionalPayoff: string;
+}
+
+export interface ProtagonistSoulSpec {
+  title: string;
+  coreConcept: string;
+  antiPowerLimit: string;
+  soulFingerprints: { name: string; origin: string; clueEffect: string }[];
+  soulStages: { stage: string; span: string; mechanism: string }[];
+}
+
+export interface ArcSoulSetting {
+  protagonistSoulState: string;
+  companionSoulSpec: string;
+  soulResonance: string;
+}
+
+export interface CharacterSoulProfile {
+  archetype: string;
+  imprint: string;
+  resonance: string;
+}
 
 export interface ChapterBeat {
   id: string;
@@ -48,11 +131,18 @@ export interface GoldenFingerCost {
   restraintThrill: string;
 }
 
+export interface ThrillHook {
+  label: string;
+  detail: string;
+}
+
 export interface StoryArc {
   id: string;
   indexLabel: string;
   worldKey: WorldKey;
   worldName: string;
+  mapSector: MapSectorKey;
+  sectorLabel: string;
   title: string;
   subtitle: string;
   identityType: string;
@@ -64,11 +154,22 @@ export interface StoryArc {
   independentTheme: string;
   logline: string;
   deathMethod: string;
+  thrillHook: ThrillHook;
   beats: ChapterBeat[];
   reward: SystemReward;
   foreshadowing: ForeshadowingHook;
   clueWedge: DelayClueWedge;
   costBalance: GoldenFingerCost;
+  soulSetting: ArcSoulSetting;
+}
+
+export interface LifespanTierSpec {
+  tierCode: string;
+  category: string;
+  lifespanRange: string;
+  mechanism: string;
+  representativeCharacters: string;
+  constraintNote: string;
 }
 
 export interface CharacterNode {
@@ -81,11 +182,13 @@ export interface CharacterNode {
   x: number;
   y: number;
   isProtagonist?: boolean;
+  lifespanSpec: string;
   eraStatus: string;
   beforeDeath: string;
   afterDeath: string;
   keepsake: string;
   visualAnchor: string;
+  soulProfile: CharacterSoulProfile;
 }
 
 export interface RelationshipEdge {
@@ -111,6 +214,8 @@ export interface LoopStage {
 export interface WorldSettingSpec {
   worldKey: WorldKey;
   name: string;
+  mapSector: MapSectorKey;
+  sectorLabel: string;
   eraTone: string;
   powerSystem: string;
   socialOrder: string;

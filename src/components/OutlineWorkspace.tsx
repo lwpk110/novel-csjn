@@ -11,19 +11,28 @@ interface OutlineWorkspaceProps {
   onAddArc: (newArc: StoryArc) => void;
 }
 
-type EraFilterKey = 'all' | 'ancient' | 'fantasy' | 'future' | 'convergence';
+type EraFilterKey = 'all' | 'ancient' | 'fantasy' | 'celestial_nether' | 'future' | 'convergence';
 
 const ERA_FILTERS: { key: EraFilterKey; label: string; worlds?: WorldKey[] }[] = [
   { key: 'all', label: '全部卷章' },
-  { key: 'ancient', label: '古纪凡尘与仙门', worlds: ['county', 'dynasty', 'sect'] },
+  {
+    key: 'ancient',
+    label: '第一纪 · 凡尘父子与暗巷',
+    worlds: ['county', 'dynasty', 'blacksmith', 'nightwatch', 'sect'],
+  },
   {
     key: 'fantasy',
-    label: '诸天幻想异境',
-    worlds: ['atlantis', 'skywhale', 'mirror_desert', 'lantern_market'],
+    label: '第二纪 · 极昼极夜奇境',
+    worlds: ['atlantis', 'skywhale', 'mirror_desert', 'twilight', 'lantern_market'],
+  },
+  {
+    key: 'celestial_nether',
+    label: '第三纪 · 冥界与天界',
+    worlds: ['nether', 'heaven'],
   },
   {
     key: 'future',
-    label: '架空现代与末世',
+    label: '第四纪 · 现代与末世',
     worlds: ['alt_modern', 'alt_apocalypse'],
   },
   { key: 'convergence', label: '荒坟回响', worlds: ['convergence'] },
@@ -158,6 +167,8 @@ export const OutlineWorkspace: React.FC<OutlineWorkspaceProps> = ({
       indexLabel: `第 ${nextIndex} 卷`,
       worldKey: 'county',
       worldName: newArcForm.worldName.trim(),
+      mapSector: 'normal',
+      sectorLabel: '常昼常夜板块',
       title: newArcForm.title.trim(),
       subtitle: `${newArcForm.identityType.trim()} · 独立轮回卷章`,
       identityType: newArcForm.identityType.trim() || '异世轮回',
@@ -174,6 +185,12 @@ export const OutlineWorkspace: React.FC<OutlineWorkspaceProps> = ({
         '主角以全新身份坠入此界，陪伴核心对象走完一世后假死脱身。',
       deathMethod:
         newArcForm.deathMethod.trim() || '功成身退之际借机假死老去，悄然换界。',
+      thrillHook: {
+        label: '克制破局 + 跨世余韵',
+        detail:
+          newArcForm.independentTheme.trim() ||
+          '依靠当世身份与多年沉淀的手艺破局，假死后留下令故人追悔或寻踪的跨世伏笔。',
+      },
       beats: [
         {
           id: `nb-1-${Date.now()}`,
@@ -224,6 +241,13 @@ export const OutlineWorkspace: React.FC<OutlineWorkspaceProps> = ({
           newArcForm.costPaid.trim() ||
           '越界催动金手指消耗数十年寿元，并留下短暂感官反噬与因果破绽。',
         restraintThrill: '反龙傲天克制爽点：依靠跨世沉淀的阅历与手艺，而非数值碾压。',
+      },
+      soulSetting: {
+        protagonistSoulState:
+          '未烬凡心魂开启“岁月沉降阀”，保持清醒温和的凡人心境，仅在越界动用往世印记时渗出微弱魂纹破绽。',
+        companionSoulSpec: `${newArcForm.companionName.trim() || '有缘故人'}：因本世数十年朝夕相伴，神魂深处烙下无可替代的岁月初印与守望执念。`,
+        soulResonance:
+          '当卷假死后沉淀出全新一道灵魂年轮，旧物与微末动作习惯会在遥远纪元再度共鸣认人。',
       },
     };
     onAddArc(created);
@@ -354,7 +378,7 @@ export const OutlineWorkspace: React.FC<OutlineWorkspaceProps> = ({
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-6 sm:p-8">
                 <div className="text-xs text-white/80">
-                  {activeArc.indexLabel} · {activeArc.worldName} · {activeArc.identityType}
+                  {activeArc.indexLabel} · {activeArc.worldName} · {activeArc.sectorLabel} · {activeArc.identityType}
                 </div>
                 <h2 className="font-editorial text-2xl sm:text-3xl font-semibold text-white mt-1.5">
                   {activeArc.title}
@@ -397,6 +421,20 @@ export const OutlineWorkspace: React.FC<OutlineWorkspaceProps> = ({
                 <p className="text-[15px] leading-[1.8] text-[#27272A]">
                   {activeArc.logline}
                 </p>
+                <div className="pt-4 border-t border-[#E4E4E7]">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="text-xs font-medium text-[#C81E1E]">
+                      当卷核心爽点
+                    </span>
+                    <span className="text-xs font-medium text-[#141413]">
+                      {activeArc.thrillHook.label}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-relaxed text-[#27272A] mt-2">
+                    {activeArc.thrillHook.detail}
+                  </p>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-3">
                   <div className="pt-4 border-t border-[#E4E4E7]">
                     <div className="text-xs font-medium text-[#71717A]">
@@ -717,6 +755,44 @@ export const OutlineWorkspace: React.FC<OutlineWorkspaceProps> = ({
                         {activeArc.costBalance.restraintThrill}
                       </p>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 07. Soul Setting per Arc */}
+              <div className="space-y-4 pt-6 border-t border-[#E4E4E7]">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="text-lg font-semibold text-[#141413]">
+                    07. 灵魂设定（Soul · 主角魂态、人物魂格与跨世共鸣）
+                  </h3>
+                  <span className="text-xs text-[#C81E1E] font-medium">
+                    灵魂年轮 · 非外挂有代价
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-1">
+                  <div className="space-y-1.5">
+                    <div className="text-xs font-medium text-[#71717A]">
+                      主角当世魂态
+                    </div>
+                    <p className="text-xs leading-relaxed text-[#27272A]">
+                      {activeArc.soulSetting.protagonistSoulState}
+                    </p>
+                  </div>
+                  <div className="space-y-1.5 md:pl-6 md:border-l md:border-[#E4E4E7]">
+                    <div className="text-xs font-medium text-[#71717A]">
+                      核心人物灵魂底色
+                    </div>
+                    <p className="text-xs leading-relaxed text-[#27272A]">
+                      {activeArc.soulSetting.companionSoulSpec}
+                    </p>
+                  </div>
+                  <div className="space-y-1.5 md:pl-6 md:border-l md:border-[#E4E4E7]">
+                    <div className="text-xs font-medium text-[#C81E1E]">
+                      跨世灵魂共鸣 / 认人锚点
+                    </div>
+                    <p className="text-xs leading-relaxed text-[#3F3F46]">
+                      {activeArc.soulSetting.soulResonance}
+                    </p>
                   </div>
                 </div>
               </div>
