@@ -94,7 +94,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({ arcs, onClose }) => {
     lines.push('## 三、核心人物、寿元核定、灵魂设定与跨世关系');
     CHARACTER_NODES.forEach((c) => {
       lines.push(
-        `- **${c.name}**（${c.worldLabel} · ${c.title}）：[寿元] ${c.lifespanSpec} ｜ ${c.beforeDeath} 假死后：${c.afterDeath} ｜ **Soul**：${c.soulProfile.archetype}（${c.soulProfile.imprint} → ${c.soulProfile.resonance}）`
+        `- **${c.name}**（${c.worldLabel} · ${c.title}）：[寿元] ${c.lifespanSpec} ｜ ${c.beforeDeath} 假死后：${c.afterDeath}`
+      );
+      lines.push(
+        `  - **立体 Soul**：${c.soulProfile.archetype}（${c.soulProfile.temperamentTraits.join(' · ')}） ｜ **性格**：${c.soulProfile.personality} ｜ **职业**：${c.soulProfile.occupation} ｜ **口癖**：${c.soulProfile.catchphrase} ｜ **信念**：${c.soulProfile.creed} ｜ **独特外貌**：${c.soulProfile.distinctiveAppearance} ｜ **魂印共鸣**：${c.soulProfile.imprint} → ${c.soulProfile.resonance}`
       );
     });
     lines.push('');
@@ -139,6 +142,12 @@ export const ExportModal: React.FC<ExportModalProps> = ({ arcs, onClose }) => {
     lines.push(`### ${PROTAGONIST_SOUL_SPEC.title}`);
     lines.push(`- **核心机制**：${PROTAGONIST_SOUL_SPEC.coreConcept}`);
     lines.push(`- **反龙傲天限制**：${PROTAGONIST_SOUL_SPEC.antiPowerLimit}`);
+    lines.push(`- **灵魂气质**：${PROTAGONIST_SOUL_SPEC.temperamentTraits.join(' · ')}`);
+    lines.push(`- **性格反差**：${PROTAGONIST_SOUL_SPEC.personality}`);
+    lines.push(`- **职业谱系**：${PROTAGONIST_SOUL_SPEC.occupationLineage}`);
+    lines.push(`- **标志口癖**：${PROTAGONIST_SOUL_SPEC.catchphrase}`);
+    lines.push(`- **人生信念**：${PROTAGONIST_SOUL_SPEC.creed}`);
+    lines.push(`- **独特外貌**：${PROTAGONIST_SOUL_SPEC.distinctiveAppearance}`);
     PROTAGONIST_SOUL_SPEC.soulFingerprints.forEach((fp) => {
       lines.push(`- **${fp.name}**（${fp.origin}）：${fp.clueEffect}`);
     });

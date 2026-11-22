@@ -28,6 +28,7 @@ export const RelationshipGraph: React.FC = () => {
   const [nodes, setNodes] = useState<CharacterNode[]>(CHARACTER_NODES);
   const [layerMode, setLayerMode] = useState<LayerMode>('all');
   const [worldFilter, setWorldFilter] = useState<WorldKey | 'all'>('all');
+  const [traitFilter, setTraitFilter] = useState<string>('all');
   const [highlightHidden, setHighlightHidden] = useState(true);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>('protagonist');
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
@@ -37,11 +38,20 @@ export const RelationshipGraph: React.FC = () => {
   const draggingRef = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
 
   const visibleNodes = useMemo(() => {
-    if (worldFilter === 'all') return nodes;
-    return nodes.filter(
-      (n) => n.worldKey === 'core' || n.worldKey === worldFilter || n.worldKey === 'convergence'
-    );
-  }, [nodes, worldFilter]);
+    return nodes.filter((n) => {
+      if (worldFilter !== 'all') {
+        const worldMatch =
+          n.worldKey === 'core' || n.worldKey === worldFilter || n.worldKey === 'convergence';
+        if (!worldMatch) return false;
+      }
+      if (traitFilter !== 'all') {
+        if (n.isProtagonist) return true;
+        const soulText = `${n.soulProfile.temperamentTraits.join(' ')} ${n.soulProfile.personality}`;
+        if (!soulText.includes(traitFilter)) return false;
+      }
+      return true;
+    });
+  }, [nodes, worldFilter, traitFilter]);
 
   const visibleNodeIds = useMemo(
     () => new Set(visibleNodes.map((n) => n.id)),
@@ -120,6 +130,7 @@ export const RelationshipGraph: React.FC = () => {
     setNodes(CHARACTER_NODES);
     setZoom(1);
     setWorldFilter('all');
+    setTraitFilter('all');
     setLayerMode('all');
   };
 
@@ -174,6 +185,20 @@ export const RelationshipGraph: React.FC = () => {
             <option value="heaven">第十二世 · 陨星旧档库（天界）</option>
             <option value="alt_modern">第十三世 · 霓虹旧港（架空现代）</option>
             <option value="alt_apocalypse">第十四世 · 灰烬方舟（极夜末世）</option>
+          </select>
+
+          <select
+            aria-label="按 Soul 气质特质筛选"
+            value={traitFilter}
+            onChange={(e) => setTraitFilter(e.target.value)}
+            className="px-3 py-2 text-xs font-medium bg-white border border-[#D4D4D8] rounded-md text-[#141413] focus:outline-none focus:border-[#141413] cursor-pointer"
+          >
+            <option value="all">全部 Soul 气质</option>
+            <option value="病娇">病娇偏执（占有/追夫）</option>
+            <option value="可爱">可爱元气（呆萌/甜软）</option>
+            <option value="冰冷">冰冷清绝（高冷/铁面）</option>
+            <option value="热情">热情炽烈（直球/豪爽）</option>
+            <option value="傲娇">傲娇护短（嘴硬心软）</option>
           </select>
         </div>
 
@@ -501,23 +526,72 @@ export const RelationshipGraph: React.FC = () => {
                     {selectedNode.visualAnchor}
                   </p>
                 </div>
-                <div className="pt-3 border-t border-[#E4E4E7] space-y-2">
+                <div className="pt-3 border-t border-[#E4E4E7] space-y-3">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="text-xs font-medium text-[#C81E1E]">
-                      灵魂底色 · Soul 设定
+                      人物立体 Soul 档案
                     </span>
-                    <span className="text-xs font-medium text-[#141413]">
+                    <span className="text-xs font-semibold text-[#141413]">
                       {selectedNode.soulProfile.archetype}
                     </span>
                   </div>
-                  <div className="text-xs text-[#27272A] leading-relaxed">
-                    <span className="text-[#71717A]">魂印与习惯：</span>
-                    {selectedNode.soulProfile.imprint}
+
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedNode.soulProfile.temperamentTraits.map((trait) => {
+                      const isPrimary = /病娇|可爱|冰冷|热情|傲娇/.test(trait);
+                      return (
+                        <span
+                          key={trait}
+                          className={`px-2 py-0.5 text-[11px] font-medium rounded-sm border ${
+                            isPrimary
+                              ? 'bg-[#FEF2F2]/80 border-[#FECACA] text-[#B91C1C]'
+                              : 'bg-[#FAFAFA] border-[#E4E4E7] text-[#3F3F46]'
+                          }`}
+                        >
+                          {trait}
+                        </span>
+                      );
+                    })}
                   </div>
-                  <div className="text-xs text-[#3F3F46] leading-relaxed">
-                    <span className="text-[#71717A]">跨世共鸣：</span>
-                    {selectedNode.soulProfile.resonance}
-                  </div>
+
+                  <dl className="divide-y divide-[#F4F4F5] text-xs leading-relaxed">
+                    <div className="py-1.5">
+                      <dt className="text-[#71717A] font-medium">核心性格</dt>
+                      <dd className="text-[#141413] mt-0.5">
+                        {selectedNode.soulProfile.personality}
+                      </dd>
+                    </div>
+                    <div className="py-1.5">
+                      <dt className="text-[#71717A] font-medium">职业与身份</dt>
+                      <dd className="text-[#27272A] mt-0.5">
+                        {selectedNode.soulProfile.occupation}
+                      </dd>
+                    </div>
+                    <div className="py-1.5">
+                      <dt className="text-[#C81E1E] font-medium">标志口癖 / 习惯</dt>
+                      <dd className="font-editorial text-[#141413] mt-0.5">
+                        {selectedNode.soulProfile.catchphrase}
+                      </dd>
+                    </div>
+                    <div className="py-1.5">
+                      <dt className="text-[#71717A] font-medium">执念与信念</dt>
+                      <dd className="text-[#27272A] mt-0.5">
+                        {selectedNode.soulProfile.creed}
+                      </dd>
+                    </div>
+                    <div className="py-1.5">
+                      <dt className="text-[#71717A] font-medium">独特外貌与细节</dt>
+                      <dd className="text-[#27272A] mt-0.5">
+                        {selectedNode.soulProfile.distinctiveAppearance}
+                      </dd>
+                    </div>
+                    <div className="py-1.5">
+                      <dt className="text-[#71717A] font-medium">魂印与跨世共鸣</dt>
+                      <dd className="text-[#3F3F46] mt-0.5">
+                        {selectedNode.soulProfile.imprint} → {selectedNode.soulProfile.resonance}
+                      </dd>
+                    </div>
+                  </dl>
                 </div>
               </div>
 

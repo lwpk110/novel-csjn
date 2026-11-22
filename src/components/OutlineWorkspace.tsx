@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, Edit3, Plus, X } from 'lucide-react';
 import { ChapterBeat, StoryArc, WorldKey } from '../types/novel';
-import { HERO_ARTWORK } from '../data/novelData';
+import { CHARACTER_NODES, HERO_ARTWORK } from '../data/novelData';
 
 interface OutlineWorkspaceProps {
   arcs: StoryArc[];
@@ -795,6 +795,96 @@ export const OutlineWorkspace: React.FC<OutlineWorkspaceProps> = ({
                     </p>
                   </div>
                 </div>
+
+                {/* Detailed Multi-Dimensional Character Soul Dossiers for this Arc */}
+                {(() => {
+                  const arcCharacters = CHARACTER_NODES.filter(
+                    (n) =>
+                      n.worldKey === activeArc.worldKey ||
+                      (activeArc.worldKey === 'convergence' && n.id === 'protagonist')
+                  );
+                  if (arcCharacters.length === 0) return null;
+                  return (
+                    <div className="pt-5 border-t border-[#F4F4F5] space-y-4">
+                      <div className="text-xs font-medium text-[#71717A]">
+                        本卷核心人物立体 Soul 档案（气质特质 · 性格 · 职业 · 口癖 · 信念 · 独特外貌）
+                      </div>
+                      <div className="space-y-4">
+                        {arcCharacters.map((charNode) => (
+                          <div
+                            key={charNode.id}
+                            className="p-4 sm:p-5 rounded-lg bg-[#FAFAFA] border border-[#E4E4E7] space-y-3"
+                          >
+                            <div className="flex flex-wrap items-baseline justify-between gap-2 pb-2.5 border-b border-[#E4E4E7]">
+                              <div>
+                                <span className="font-editorial text-base font-semibold text-[#141413]">
+                                  {charNode.name}
+                                </span>
+                                <span className="text-xs text-[#71717A] ml-2">
+                                  {charNode.title}
+                                </span>
+                              </div>
+                              <span className="text-xs font-medium text-[#C81E1E]">
+                                {charNode.soulProfile.archetype}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap gap-1.5">
+                              {charNode.soulProfile.temperamentTraits.map((trait) => {
+                                const isPrimary = /病娇|可爱|冰冷|热情|傲娇/.test(trait);
+                                return (
+                                  <span
+                                    key={trait}
+                                    className={`px-2 py-0.5 text-[11px] font-medium rounded-sm border ${
+                                      isPrimary
+                                        ? 'bg-[#FEF2F2]/80 border-[#FECACA] text-[#B91C1C]'
+                                        : 'bg-white border-[#E4E4E7] text-[#3F3F46]'
+                                    }`}
+                                  >
+                                    {trait}
+                                  </span>
+                                );
+                              })}
+                            </div>
+
+                            <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5 text-xs leading-relaxed">
+                              <div>
+                                <dt className="text-[#71717A] font-medium">核心性格</dt>
+                                <dd className="text-[#141413] mt-0.5">
+                                  {charNode.soulProfile.personality}
+                                </dd>
+                              </div>
+                              <div>
+                                <dt className="text-[#71717A] font-medium">职业与身份</dt>
+                                <dd className="text-[#27272A] mt-0.5">
+                                  {charNode.soulProfile.occupation}
+                                </dd>
+                              </div>
+                              <div>
+                                <dt className="text-[#C81E1E] font-medium">标志口癖 / 习惯</dt>
+                                <dd className="font-editorial text-[#141413] mt-0.5">
+                                  {charNode.soulProfile.catchphrase}
+                                </dd>
+                              </div>
+                              <div>
+                                <dt className="text-[#71717A] font-medium">执念与信念</dt>
+                                <dd className="text-[#27272A] mt-0.5">
+                                  {charNode.soulProfile.creed}
+                                </dd>
+                              </div>
+                              <div className="md:col-span-2 pt-2 border-t border-[#E4E4E7]">
+                                <dt className="text-[#71717A] font-medium">独特外貌与细节</dt>
+                                <dd className="text-[#27272A] mt-0.5">
+                                  {charNode.soulProfile.distinctiveAppearance}
+                                </dd>
+                              </div>
+                            </dl>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </article>

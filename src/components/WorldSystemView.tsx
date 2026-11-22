@@ -525,6 +525,49 @@ export const WorldSystemView: React.FC<WorldSystemViewProps> = ({ arcs, onOpenMa
             </p>
           </div>
 
+          <div className="space-y-4 pb-6 border-b border-[#E4E4E7] text-xs leading-relaxed">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-medium text-[#71717A]">灵魂气质底色：</span>
+              {PROTAGONIST_SOUL_SPEC.temperamentTraits.map((trait) => (
+                <span
+                  key={trait}
+                  className="px-2 py-0.5 text-[11px] font-medium rounded-sm border border-[#E4E4E7] bg-[#FAFAFA] text-[#141413]"
+                >
+                  {trait}
+                </span>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <div>
+                  <div className="font-medium text-[#71717A]">核心性格与行事反差</div>
+                  <p className="text-[#141413] mt-1">{PROTAGONIST_SOUL_SPEC.personality}</p>
+                </div>
+              <div>
+                <div className="font-medium text-[#71717A]">十四世市井职业谱系</div>
+                <p className="text-[#27272A] mt-1">{PROTAGONIST_SOUL_SPEC.occupationLineage}</p>
+              </div>
+              <div>
+                <div className="font-medium text-[#C81E1E]">跨世标志口癖</div>
+                <p className="font-editorial text-sm text-[#141413] mt-1">
+                  {PROTAGONIST_SOUL_SPEC.catchphrase}
+                </p>
+              </div>
+            </div>
+            <div className="space-y-3 md:pl-6 md:border-l md:border-[#E4E4E7]">
+              <div>
+                <div className="font-medium text-[#71717A]">不可动摇之人生信念</div>
+                <p className="text-[#141413] mt-1">{PROTAGONIST_SOUL_SPEC.creed}</p>
+              </div>
+              <div>
+                <div className="font-medium text-[#71717A]">独特外貌与伪装体态锚点</div>
+                <p className="text-[#27272A] mt-1">{PROTAGONIST_SOUL_SPEC.distinctiveAppearance}</p>
+              </div>
+            </div>
+            </div>
+          </div>
+
           <div className="space-y-3">
             <div className="text-xs font-medium text-[#71717A]">
               三大不可篡改灵魂指纹（换十四具皮囊仍被旧人精准认出）

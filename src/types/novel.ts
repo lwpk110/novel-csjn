@@ -79,6 +79,12 @@ export interface ProtagonistSoulSpec {
   title: string;
   coreConcept: string;
   antiPowerLimit: string;
+  temperamentTraits: string[];
+  personality: string;
+  occupationLineage: string;
+  catchphrase: string;
+  creed: string;
+  distinctiveAppearance: string;
   soulFingerprints: { name: string; origin: string; clueEffect: string }[];
   soulStages: { stage: string; span: string; mechanism: string }[];
 }
@@ -91,6 +97,12 @@ export interface ArcSoulSetting {
 
 export interface CharacterSoulProfile {
   archetype: string;
+  temperamentTraits: string[];
+  personality: string;
+  occupation: string;
+  catchphrase: string;
+  creed: string;
+  distinctiveAppearance: string;
   imprint: string;
   resonance: string;
 }
